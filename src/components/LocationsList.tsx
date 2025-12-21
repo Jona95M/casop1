@@ -27,7 +27,6 @@ export default function LocationsList({ onEdit, onNew, refreshTrigger }: Locatio
       if (error) throw error;
       setLocations((data as Ubicacion[]) || []);
     } catch (error) {
-      console.error('Error loading locations:', error);
     } finally {
       setLoading(false);
     }
@@ -41,7 +40,6 @@ export default function LocationsList({ onEdit, onNew, refreshTrigger }: Locatio
       if (error) throw error;
       loadLocations();
     } catch (error) {
-      console.error('Error deleting location:', error);
     }
   };
 

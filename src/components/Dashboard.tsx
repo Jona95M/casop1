@@ -30,7 +30,6 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
             setLocations((locationsRes.data as Ubicacion[]) || []);
             setContacts((contactsRes.data as Contacto[]) || []);
         } catch (error) {
-            console.error('Error loading dashboard data:', error);
         } finally {
             setLoading(false);
         }

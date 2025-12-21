@@ -70,7 +70,6 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
             onSave();
             onClose();
         } catch (error) {
-            console.error('Error saving event:', error);
             alert('Error al guardar el evento');
         } finally {
             setSaving(false);

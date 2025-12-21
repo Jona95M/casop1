@@ -126,7 +126,6 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
             onSave();
             onClose();
         } catch (error) {
-            console.error('Error saving location:', error);
             alert('Error al guardar la ubicación');
         } finally {
             setSaving(false);

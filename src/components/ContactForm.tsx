@@ -57,7 +57,6 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
       onSave();
       onClose();
     } catch (error) {
-      console.error('Error saving contact:', error);
       alert('Error al guardar el contacto');
     } finally {
       setSaving(false);

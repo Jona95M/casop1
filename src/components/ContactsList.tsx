@@ -27,7 +27,6 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
       if (error) throw error;
       setContacts((data as Contacto[]) || []);
     } catch (error) {
-      console.error('Error loading contacts:', error);
     } finally {
       setLoading(false);
     }
@@ -41,7 +40,6 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
       if (error) throw error;
       loadContacts();
     } catch (error) {
-      console.error('Error deleting contact:', error);
     }
   };
 

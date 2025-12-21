@@ -28,7 +28,6 @@ export default function EventsList({ onEdit, onNew, refreshTrigger }: EventsList
       if (error) throw error;
       setEvents((data as Evento[]) || []);
     } catch (error) {
-      console.error('Error loading events:', error);
     } finally {
       setLoading(false);
     }
@@ -42,7 +41,6 @@ export default function EventsList({ onEdit, onNew, refreshTrigger }: EventsList
       if (error) throw error;
       loadEvents();
     } catch (error) {
-      console.error('Error deleting event:', error);
     }
   };
 
