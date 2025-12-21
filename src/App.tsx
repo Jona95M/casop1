@@ -76,40 +76,15 @@ function App() {
     setRefreshKey((prev) => prev + 1);
   };
 
+
   const handleNavigate = (tab: 'events' | 'locations' | 'contacts') => {
     setActiveTab(tab);
-  };
-
-  const getPageTitle = () => {
-    switch (activeTab) {
-      case 'dashboard': return 'Panel de Control';
-      case 'events': return 'Eventos';
-      case 'locations': return 'Ubicaciones';
-      case 'contacts': return 'Contactos';
-      case 'settings': return 'Configuración';
-      case 'help': return 'Ayuda';
-      default: return 'Panel de Control';
-    }
-  };
-
-  const getPageSubtitle = () => {
-    switch (activeTab) {
-      case 'dashboard': return 'Resumen de tu sistema de eventos';
-      case 'events': return 'Gestiona conferencias, talleres y seminarios';
-      case 'locations': return 'Administra los lugares de tus eventos';
-      case 'contacts': return 'Directorio de ponentes e invitados';
-      case 'settings': return 'Configura tu sistema';
-      case 'help': return 'Centro de ayuda';
-      default: return '';
-    }
   };
 
   return (
     <Layout
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      pageTitle={getPageTitle()}
-      pageSubtitle={getPageSubtitle()}
     >
       {activeTab === 'dashboard' && (
         <Dashboard onNavigate={handleNavigate} onCreateEvent={handleCreateEvent} />
