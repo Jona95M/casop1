@@ -1,15 +1,14 @@
 import { Calendar, MapPin, Users, TrendingUp } from 'lucide-react';
-import { Event, Location, Contact } from '../lib/supabase';
+import { Evento, Ubicacion, Contacto } from '../lib/supabase';
 
 interface StatsCardsProps {
-    events: Event[];
-    locations: Location[];
-    contacts: Contact[];
+    events: Evento[];
+    locations: Ubicacion[];
+    contacts: Contacto[];
 }
 
 export default function StatsCards({ events, locations, contacts }: StatsCardsProps) {
-    // Calculate upcoming events (events in the future)
-    const upcomingEvents = events.filter(e => new Date(e.event_date) > new Date()).length;
+    const upcomingEvents = events.filter(e => new Date(e.fecha_evento) > new Date()).length;
 
     const stats = [
         {
@@ -44,9 +43,9 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             value: upcomingEvents,
             change: 'Esta semana',
             icon: TrendingUp,
-            iconBg: 'bg-danger-100',
-            iconColor: 'text-danger',
-            changeColor: 'text-text-muted',
+            iconBg: 'bg-purple-100',
+            iconColor: 'text-purple-600',
+            changeColor: 'text-purple-600',
         },
     ];
 

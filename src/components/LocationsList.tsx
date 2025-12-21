@@ -1,33 +1,31 @@
-import { useEffect, useState } from 'react';
-import { MapPin, Plus, Edit2, Trash2, Search, Navigation } from 'lucide-react';
-import { supabase, Location } from '../lib/supabase';
+import { useState, useEffect } from 'react';
+import { MapPin, Plus, Edit2, Trash2, Search, ExternalLink, Navigation } from 'lucide-react';
+import { supabase, Ubicacion } from '../lib/supabase';
 
 interface LocationsListProps {
-  onCreateLocation: () => void;
-  onEditLocation: (location: Location) => void;
+  onEdit: (location: Ubicacion) => void;
+  onNew: () => void;
+  refreshTrigger?: number;
 }
 
-export default function LocationsList({
-  onCreateLocation,
-  onEditLocation,
-}: LocationsListProps) {
-  const [locations, setLocations] = useState<Location[]>([]);
+export default function LocationsList({ onEdit, onNew, refreshTrigger }: LocationsListProps) {
+  const [locations, setLocations] = useState<Ubicacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     loadLocations();
-  }, []);
+  }, [refreshTrigger]);
 
   const loadLocations = async () => {
     try {
       const { data, error } = await supabase
-        .from('locations')
+        .from('ubicaciones')
         .select('*')
-        .order('title');
+        .order('titulo');
 
       if (error) throw error;
-      setLocations((data as Location[]) || []);
+      setLocations((data as Ubicacion[]) || []);
     } catch (error) {
       console.error('Error loading locations:', error);
     } finally {
@@ -35,41 +33,44 @@ export default function LocationsList({
     }
   };
 
-  const deleteLocation = async (id: string) => {
-    if (!confirm('¿Está seguro de eliminar esta ubicación?')) return;
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar esta ubicación?')) return;
 
     try {
-      const { error } = await supabase.from('locations').delete().eq('id', id);
+      const { error } = await supabase.from('ubicaciones').delete().eq('id', id);
       if (error) throw error;
-      setLocations(locations.filter((l) => l.id !== id));
+      loadLocations();
     } catch (error) {
       console.error('Error deleting location:', error);
-      alert('Error al eliminar la ubicación');
     }
   };
 
-  const openInMaps = (lat: number, lng: number) => {
-    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+  const openInMaps = (lat: number | null, lng: number | null, title: string) => {
+    if (lat && lng) {
+      window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+    } else {
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(title)}`, '_blank');
+    }
   };
 
   const filteredLocations = locations.filter(location =>
-    location.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    location.address.toLowerCase().includes(searchTerm.toLowerCase())
+    location.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    location.direccion.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-pulse-soft text-text-muted">Cargando ubicaciones...</div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div className="relative flex-1 max-w-md w-full">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
@@ -79,64 +80,45 @@ export default function LocationsList({
             className="input-search w-full"
           />
         </div>
-
-        <button onClick={onCreateLocation} className="btn-primary whitespace-nowrap">
+        <button onClick={onNew} className="btn-primary">
           <Plus className="w-4 h-4" />
-          Nueva Ubicación
+          <span>Nueva Ubicación</span>
         </button>
       </div>
 
       {/* Locations Grid */}
       {filteredLocations.length === 0 ? (
         <div className="card p-12 text-center">
-          <MapPin className="w-16 h-16 mx-auto text-text-muted mb-4" />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
-            {searchTerm ? 'No se encontraron ubicaciones' : 'No hay ubicaciones registradas'}
-          </h3>
-          <p className="text-text-muted mb-6">
-            {searchTerm
-              ? 'Intenta con otros términos de búsqueda'
-              : 'Comienza agregando tu primera ubicación'}
-          </p>
-          {!searchTerm && (
-            <button onClick={onCreateLocation} className="btn-primary">
-              <Plus className="w-4 h-4" />
-              Crear Ubicación
-            </button>
-          )}
+          <MapPin className="w-12 h-12 text-text-muted mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-text-primary mb-2">No hay ubicaciones</h3>
+          <p className="text-text-muted mb-4">Comienza agregando tu primera ubicación</p>
+          <button onClick={onNew} className="btn-primary mx-auto">
+            <Plus className="w-4 h-4" />
+            <span>Agregar Ubicación</span>
+          </button>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredLocations.map((location) => (
-            <div
-              key={location.id}
-              className="card p-5 card-hover group"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
+            <div key={location.id} className="card p-5 hover:shadow-card-hover transition-all duration-200">
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-success to-success-600 rounded-xl flex items-center justify-center shadow-lg shadow-success/20">
-                    <MapPin className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 bg-success-100 rounded-xl flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-success" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
-                      {location.title}
-                    </h3>
-                  </div>
+                  <h3 className="font-semibold text-text-primary">{location.titulo}</h3>
                 </div>
-
-                {/* Actions */}
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1">
                   <button
-                    onClick={() => onEditLocation(location)}
-                    className="btn-icon text-primary hover:bg-primary-50"
+                    onClick={() => onEdit(location)}
+                    className="btn-icon hover:bg-primary-50 hover:text-primary"
                     title="Editar"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => deleteLocation(location.id)}
-                    className="btn-icon text-danger hover:bg-danger-50"
+                    onClick={() => handleDelete(location.id)}
+                    className="btn-icon hover:bg-red-50 hover:text-red-500"
                     title="Eliminar"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -144,29 +126,22 @@ export default function LocationsList({
                 </div>
               </div>
 
-              {/* Address */}
-              <div className="space-y-3">
-                <div className="flex items-start gap-2 text-sm text-text-secondary">
-                  <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-text-muted" />
-                  <p className="line-clamp-2">{location.address}</p>
-                </div>
+              <p className="text-sm text-text-secondary mb-3 line-clamp-2">{location.direccion}</p>
 
-                {/* Coordinates & Actions */}
-                {location.latitude && location.longitude && (
-                  <div className="flex items-center justify-between pt-3 border-t border-border-light">
-                    <span className="text-xs text-text-muted font-mono">
-                      {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-                    </span>
-                    <button
-                      onClick={() => openInMaps(location.latitude!, location.longitude!)}
-                      className="flex items-center gap-1 text-xs text-primary hover:text-primary-600 font-medium transition-colors"
-                    >
-                      <Navigation className="w-3.5 h-3.5" />
-                      Ver en mapa
-                    </button>
-                  </div>
-                )}
-              </div>
+              {(location.latitud && location.longitud) && (
+                <div className="flex items-center gap-2 text-xs text-text-muted mb-3">
+                  <Navigation className="w-3 h-3" />
+                  <span className="font-mono">{location.latitud?.toFixed(4)}, {location.longitud?.toFixed(4)}</span>
+                </div>
+              )}
+
+              <button
+                onClick={() => openInMaps(location.latitud, location.longitud, location.titulo)}
+                className="btn-secondary w-full text-sm"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>Ver en Maps</span>
+              </button>
             </div>
           ))}
         </div>

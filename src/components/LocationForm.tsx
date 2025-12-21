@@ -1,9 +1,9 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { X, MapPin } from 'lucide-react';
-import { supabase, Location } from '../lib/supabase';
+import { supabase, Ubicacion } from '../lib/supabase';
 
 interface LocationFormProps {
-    location?: Location | null;
+    location?: Ubicacion | null;
     onClose: () => void;
     onSave: () => void;
 }
@@ -16,20 +16,20 @@ declare global {
 
 export default function LocationForm({ location, onClose, onSave }: LocationFormProps) {
     const [formData, setFormData] = useState({
-        title: '',
-        address: '',
-        latitude: '',
-        longitude: '',
+        titulo: '',
+        direccion: '',
+        latitud: '',
+        longitud: '',
     });
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (location) {
             setFormData({
-                title: location.title,
-                address: location.address,
-                latitude: location.latitude?.toString() || '',
-                longitude: location.longitude?.toString() || '',
+                titulo: location.titulo,
+                direccion: location.direccion,
+                latitud: location.latitud?.toString() || '',
+                longitud: location.longitud?.toString() || '',
             });
         }
     }, [location]);
@@ -40,8 +40,9 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
             const mapElement = document.getElementById('location-map');
             if (!mapElement || !window.google) return;
 
-            const lat = formData.latitude ? parseFloat(formData.latitude) : -0.2105;
-            const lng = formData.longitude ? parseFloat(formData.longitude) : -78.4876;
+            // Coordenadas de la UTE Quito por defecto
+            const lat = formData.latitud ? parseFloat(formData.latitud) : -0.2105;
+            const lng = formData.longitud ? parseFloat(formData.longitud) : -78.4876;
 
             const map = new window.google.maps.Map(mapElement, {
                 center: { lat, lng },
@@ -63,8 +64,8 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
                 if (pos) {
                     setFormData(prev => ({
                         ...prev,
-                        latitude: pos.lat().toFixed(6),
-                        longitude: pos.lng().toFixed(6),
+                        latitud: pos.lat().toFixed(6),
+                        longitud: pos.lng().toFixed(6),
                     }));
                 }
             });
@@ -75,8 +76,8 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
                     marker.setPosition(e.latLng);
                     setFormData(prev => ({
                         ...prev,
-                        latitude: e.latLng!.lat().toFixed(6),
-                        longitude: e.latLng!.lng().toFixed(6),
+                        latitud: e.latLng!.lat().toFixed(6),
+                        longitud: e.latLng!.lng().toFixed(6),
                     }));
                 }
             });
@@ -103,22 +104,22 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
         setSaving(true);
 
         try {
-            const locationData = {
-                title: formData.title,
-                address: formData.address,
-                latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-                longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-                updated_at: new Date().toISOString(),
+            const ubicacionData = {
+                titulo: formData.titulo,
+                direccion: formData.direccion,
+                latitud: formData.latitud ? parseFloat(formData.latitud) : null,
+                longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+                actualizado_en: new Date().toISOString(),
             };
 
             if (location) {
                 const { error } = await supabase
-                    .from('locations')
-                    .update(locationData)
+                    .from('ubicaciones')
+                    .update(ubicacionData)
                     .eq('id', location.id);
                 if (error) throw error;
             } else {
-                const { error } = await supabase.from('locations').insert([locationData]);
+                const { error } = await supabase.from('ubicaciones').insert([ubicacionData]);
                 if (error) throw error;
             }
 
@@ -157,9 +158,9 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
                         <input
                             type="text"
                             required
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            placeholder="Ej: Auditorio Principal"
+                            value={formData.titulo}
+                            onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                            placeholder="Ej: Auditorio Principal UTE"
                             className="input"
                         />
                     </div>
@@ -168,10 +169,10 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
                         <label className="label">Dirección *</label>
                         <textarea
                             required
-                            value={formData.address}
-                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                            value={formData.direccion}
+                            onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
                             rows={2}
-                            placeholder="Ej: Av. Universidad 123, Lima"
+                            placeholder="Ej: Av. Mariscal Sucre y Mariana de Jesús, Quito"
                             className="input resize-none"
                         />
                     </div>
@@ -197,9 +198,9 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
                             <input
                                 type="number"
                                 step="any"
-                                value={formData.latitude}
-                                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                                placeholder="-12.0464"
+                                value={formData.latitud}
+                                onChange={(e) => setFormData({ ...formData, latitud: e.target.value })}
+                                placeholder="-0.2105"
                                 className="input font-mono text-sm"
                             />
                         </div>
@@ -209,9 +210,9 @@ export default function LocationForm({ location, onClose, onSave }: LocationForm
                             <input
                                 type="number"
                                 step="any"
-                                value={formData.longitude}
-                                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                                placeholder="-77.0428"
+                                value={formData.longitud}
+                                onChange={(e) => setFormData({ ...formData, longitud: e.target.value })}
+                                placeholder="-78.4876"
                                 className="input font-mono text-sm"
                             />
                         </div>

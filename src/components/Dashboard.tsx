@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, ArrowRight, Plus, Sparkles } from 'lucide-react';
-import { supabase, Event, Location, Contact } from '../lib/supabase';
+import { supabase, Evento, Ubicacion, Contacto } from '../lib/supabase';
 import StatsCards from './StatsCards';
 
 interface DashboardProps {
@@ -9,9 +9,9 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps) {
-    const [events, setEvents] = useState<Event[]>([]);
-    const [locations, setLocations] = useState<Location[]>([]);
-    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [events, setEvents] = useState<Evento[]>([]);
+    const [locations, setLocations] = useState<Ubicacion[]>([]);
+    const [contacts, setContacts] = useState<Contacto[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,14 +21,14 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
     const loadData = async () => {
         try {
             const [eventsRes, locationsRes, contactsRes] = await Promise.all([
-                supabase.from('events').select('*, location:locations(*)').order('event_date', { ascending: true }),
-                supabase.from('locations').select('*'),
-                supabase.from('contacts').select('*'),
+                supabase.from('eventos').select('*, ubicacion:ubicaciones(*)').order('fecha_evento', { ascending: true }),
+                supabase.from('ubicaciones').select('*'),
+                supabase.from('contactos').select('*'),
             ]);
 
-            setEvents(eventsRes.data || []);
-            setLocations(locationsRes.data || []);
-            setContacts(contactsRes.data || []);
+            setEvents((eventsRes.data as Evento[]) || []);
+            setLocations((locationsRes.data as Ubicacion[]) || []);
+            setContacts((contactsRes.data as Contacto[]) || []);
         } catch (error) {
             console.error('Error loading dashboard data:', error);
         } finally {
@@ -38,7 +38,7 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', {
+        return date.toLocaleDateString('es-EC', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -47,7 +47,7 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
 
     const formatTime = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleTimeString('es-ES', {
+        return date.toLocaleTimeString('es-EC', {
             hour: '2-digit',
             minute: '2-digit',
         });
@@ -55,12 +55,12 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
 
     // Get upcoming events (next 5)
     const upcomingEvents = events
-        .filter(e => new Date(e.event_date) > new Date())
+        .filter(e => new Date(e.fecha_evento) > new Date())
         .slice(0, 5);
 
     // Get recent activities (last 5 events created)
     const recentActivities = [...events]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .sort((a, b) => new Date(b.creado_en).getTime() - new Date(a.creado_en).getTime())
         .slice(0, 4);
 
     if (loading) {
@@ -106,39 +106,39 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                                     {/* Date Badge */}
                                     <div className="w-14 h-14 bg-primary rounded-xl flex flex-col items-center justify-center text-white flex-shrink-0">
                                         <span className="text-xs font-medium uppercase">
-                                            {new Date(event.event_date).toLocaleDateString('es-ES', { month: 'short' })}
+                                            {new Date(event.fecha_evento).toLocaleDateString('es-EC', { month: 'short' })}
                                         </span>
                                         <span className="text-xl font-bold">
-                                            {new Date(event.event_date).getDate()}
+                                            {new Date(event.fecha_evento).getDate()}
                                         </span>
                                     </div>
 
                                     {/* Event Info */}
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
-                                            {event.title}
+                                            {event.titulo}
                                         </h3>
                                         <div className="flex items-center gap-4 mt-1 text-sm text-text-muted">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-3.5 h-3.5" />
-                                                {formatTime(event.event_date)}
+                                                {formatTime(event.fecha_evento)}
                                             </span>
-                                            {event.location && (
+                                            {event.ubicacion && (
                                                 <span className="flex items-center gap-1 truncate">
                                                     <MapPin className="w-3.5 h-3.5" />
-                                                    {event.location.title}
+                                                    {event.ubicacion.titulo}
                                                 </span>
                                             )}
                                         </div>
                                     </div>
 
                                     {/* Classification Badge */}
-                                    <span className={`badge ${event.classification === 'conference' ? 'badge-primary' :
-                                            event.classification === 'workshop' ? 'badge-success' :
-                                                'badge-warning'
+                                    <span className={`badge ${event.clasificacion === 'conferencia' ? 'badge-primary' :
+                                        event.clasificacion === 'taller' ? 'badge-success' :
+                                            'badge-warning'
                                         }`}>
-                                        {event.classification === 'conference' ? 'Conferencia' :
-                                            event.classification === 'workshop' ? 'Taller' : 'Seminario'}
+                                        {event.clasificacion === 'conferencia' ? 'Conferencia' :
+                                            event.clasificacion === 'taller' ? 'Taller' : 'Seminario'}
                                     </span>
                                 </div>
                             ))}
@@ -154,14 +154,14 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="badge bg-white/20 text-white border-0">
                                     <Sparkles className="w-3 h-3 mr-1" />
-                                    Nuevo
+                                    UTE
                                 </span>
                             </div>
                             <h3 className="text-xl font-bold mb-2">
                                 Sistema de Gestión de Eventos
                             </h3>
                             <p className="text-primary-100 text-sm mb-4">
-                                Gestiona conferencias, talleres y seminarios de forma intuitiva y eficiente.
+                                Universidad Técnica Equinoccial - Gestiona conferencias, talleres y seminarios.
                             </p>
                             <button
                                 onClick={onCreateEvent}
@@ -184,10 +184,10 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                                         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm text-text-primary font-medium truncate">
-                                                {activity.title}
+                                                {activity.titulo}
                                             </p>
                                             <p className="text-xs text-text-muted">
-                                                {formatDate(activity.created_at)}
+                                                {formatDate(activity.creado_en)}
                                             </p>
                                         </div>
                                     </div>

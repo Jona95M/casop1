@@ -1,48 +1,48 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { X, Calendar } from 'lucide-react';
-import { supabase, Event, Location } from '../lib/supabase';
+import { supabase, Evento, Ubicacion } from '../lib/supabase';
 
 interface EventFormProps {
-    event?: Event | null;
+    event?: Evento | null;
     onClose: () => void;
     onSave: () => void;
 }
 
 export default function EventForm({ event, onClose, onSave }: EventFormProps) {
-    const [locations, setLocations] = useState<Location[]>([]);
+    const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
     const [formData, setFormData] = useState({
-        title: '',
-        guests: '',
-        event_date: '',
-        timezone: 'America/Lima',
-        description: '',
-        recurrence: 'none',
-        reminder: 'none',
-        classification: 'conference',
-        location_id: '',
+        titulo: '',
+        invitados: '',
+        fecha_evento: '',
+        zona_horaria: 'America/Guayaquil',
+        descripcion: '',
+        recurrencia: 'ninguna',
+        recordatorio: 'ninguno',
+        clasificacion: 'conferencia',
+        ubicacion_id: '',
     });
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        loadLocations();
+        loadUbicaciones();
         if (event) {
             setFormData({
-                title: event.title,
-                guests: event.guests,
-                event_date: event.event_date.slice(0, 16),
-                timezone: event.timezone,
-                description: event.description,
-                recurrence: event.recurrence,
-                reminder: event.reminder,
-                classification: event.classification,
-                location_id: event.location_id || '',
+                titulo: event.titulo,
+                invitados: event.invitados,
+                fecha_evento: event.fecha_evento.slice(0, 16),
+                zona_horaria: event.zona_horaria,
+                descripcion: event.descripcion,
+                recurrencia: event.recurrencia,
+                recordatorio: event.recordatorio,
+                clasificacion: event.clasificacion,
+                ubicacion_id: event.ubicacion_id || '',
             });
         }
     }, [event]);
 
-    const loadLocations = async () => {
-        const { data } = await supabase.from('locations').select('*').order('title');
-        setLocations((data as Location[]) || []);
+    const loadUbicaciones = async () => {
+        const { data } = await supabase.from('ubicaciones').select('*').order('titulo');
+        setUbicaciones((data as Ubicacion[]) || []);
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -52,18 +52,18 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
         try {
             const eventData = {
                 ...formData,
-                location_id: formData.location_id || null,
-                updated_at: new Date().toISOString(),
+                ubicacion_id: formData.ubicacion_id || null,
+                actualizado_en: new Date().toISOString(),
             };
 
             if (event) {
                 const { error } = await supabase
-                    .from('events')
+                    .from('eventos')
                     .update(eventData)
                     .eq('id', event.id);
                 if (error) throw error;
             } else {
-                const { error } = await supabase.from('events').insert([eventData]);
+                const { error } = await supabase.from('eventos').insert([eventData]);
                 if (error) throw error;
             }
 
@@ -102,8 +102,8 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                         <input
                             type="text"
                             required
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            value={formData.titulo}
+                            onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                             placeholder="Ej: Conferencia de Innovación Tecnológica"
                             className="input"
                         />
@@ -113,27 +113,27 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                         <div>
                             <label className="label">Clasificación *</label>
                             <select
-                                value={formData.classification}
-                                onChange={(e) => setFormData({ ...formData, classification: e.target.value })}
+                                value={formData.clasificacion}
+                                onChange={(e) => setFormData({ ...formData, clasificacion: e.target.value })}
                                 className="input"
                             >
-                                <option value="conference">Conferencia</option>
-                                <option value="workshop">Taller</option>
-                                <option value="seminar">Seminario</option>
+                                <option value="conferencia">Conferencia</option>
+                                <option value="taller">Taller</option>
+                                <option value="seminario">Seminario</option>
                             </select>
                         </div>
 
                         <div>
                             <label className="label">Ubicación</label>
                             <select
-                                value={formData.location_id}
-                                onChange={(e) => setFormData({ ...formData, location_id: e.target.value })}
+                                value={formData.ubicacion_id}
+                                onChange={(e) => setFormData({ ...formData, ubicacion_id: e.target.value })}
                                 className="input"
                             >
                                 <option value="">Sin ubicación</option>
-                                {locations.map((location) => (
-                                    <option key={location.id} value={location.id}>
-                                        {location.title}
+                                {ubicaciones.map((ubicacion) => (
+                                    <option key={ubicacion.id} value={ubicacion.id}>
+                                        {ubicacion.titulo}
                                     </option>
                                 ))}
                             </select>
@@ -146,8 +146,8 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                             <input
                                 type="datetime-local"
                                 required
-                                value={formData.event_date}
-                                onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                                value={formData.fecha_evento}
+                                onChange={(e) => setFormData({ ...formData, fecha_evento: e.target.value })}
                                 className="input"
                             />
                         </div>
@@ -155,16 +155,16 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                         <div>
                             <label className="label">Zona Horaria</label>
                             <select
-                                value={formData.timezone}
-                                onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+                                value={formData.zona_horaria}
+                                onChange={(e) => setFormData({ ...formData, zona_horaria: e.target.value })}
                                 className="input"
                             >
-                                <option value="America/Lima">Lima (PET)</option>
+                                <option value="America/Guayaquil">Quito (ECT)</option>
                                 <option value="America/Bogota">Bogotá (COT)</option>
+                                <option value="America/Lima">Lima (PET)</option>
                                 <option value="America/Mexico_City">Ciudad de México (CST)</option>
                                 <option value="America/Argentina/Buenos_Aires">Buenos Aires (ART)</option>
                                 <option value="America/New_York">Nueva York (EST)</option>
-                                <option value="America/Los_Angeles">Los Ángeles (PST)</option>
                                 <option value="Europe/Madrid">Madrid (CET)</option>
                             </select>
                         </div>
@@ -174,8 +174,8 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                         <label className="label">Invitados</label>
                         <input
                             type="text"
-                            value={formData.guests}
-                            onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
+                            value={formData.invitados}
+                            onChange={(e) => setFormData({ ...formData, invitados: e.target.value })}
                             placeholder="Nombres separados por comas"
                             className="input"
                         />
@@ -184,8 +184,8 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                     <div>
                         <label className="label">Descripción</label>
                         <textarea
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            value={formData.descripcion}
+                            onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                             rows={3}
                             placeholder="Describe los detalles del evento..."
                             className="input resize-none"
@@ -196,32 +196,32 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                         <div>
                             <label className="label">Repetición</label>
                             <select
-                                value={formData.recurrence}
-                                onChange={(e) => setFormData({ ...formData, recurrence: e.target.value })}
+                                value={formData.recurrencia}
+                                onChange={(e) => setFormData({ ...formData, recurrencia: e.target.value })}
                                 className="input"
                             >
-                                <option value="none">No se repite</option>
-                                <option value="daily">Diariamente</option>
-                                <option value="weekly">Semanalmente</option>
-                                <option value="monthly">Mensualmente</option>
-                                <option value="yearly">Anualmente</option>
+                                <option value="ninguna">No se repite</option>
+                                <option value="diaria">Diariamente</option>
+                                <option value="semanal">Semanalmente</option>
+                                <option value="mensual">Mensualmente</option>
+                                <option value="anual">Anualmente</option>
                             </select>
                         </div>
 
                         <div>
                             <label className="label">Recordatorio</label>
                             <select
-                                value={formData.reminder}
-                                onChange={(e) => setFormData({ ...formData, reminder: e.target.value })}
+                                value={formData.recordatorio}
+                                onChange={(e) => setFormData({ ...formData, recordatorio: e.target.value })}
                                 className="input"
                             >
-                                <option value="none">Sin recordatorio</option>
+                                <option value="ninguno">Sin recordatorio</option>
                                 <option value="5min">5 minutos antes</option>
                                 <option value="15min">15 minutos antes</option>
                                 <option value="30min">30 minutos antes</option>
-                                <option value="1hour">1 hora antes</option>
-                                <option value="1day">1 día antes</option>
-                                <option value="1week">1 semana antes</option>
+                                <option value="1hora">1 hora antes</option>
+                                <option value="1dia">1 día antes</option>
+                                <option value="1semana">1 semana antes</option>
                             </select>
                         </div>
                     </div>

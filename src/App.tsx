@@ -7,16 +7,16 @@ import LocationsList from './components/LocationsList';
 import LocationForm from './components/LocationForm';
 import ContactsList from './components/ContactsList';
 import ContactForm from './components/ContactForm';
-import { Event, Location, Contact } from './lib/supabase';
+import { Evento, Ubicacion, Contacto } from './lib/supabase';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [showEventForm, setShowEventForm] = useState(false);
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Evento | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Ubicacion | null>(null);
+  const [selectedContact, setSelectedContact] = useState<Contacto | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleCreateEvent = () => {
@@ -24,7 +24,7 @@ function App() {
     setShowEventForm(true);
   };
 
-  const handleEditEvent = (event: Event) => {
+  const handleEditEvent = (event: Evento) => {
     setSelectedEvent(event);
     setShowEventForm(true);
   };
@@ -43,7 +43,7 @@ function App() {
     setShowLocationForm(true);
   };
 
-  const handleEditLocation = (location: Location) => {
+  const handleEditLocation = (location: Ubicacion) => {
     setSelectedLocation(location);
     setShowLocationForm(true);
   };
@@ -62,7 +62,7 @@ function App() {
     setShowContactForm(true);
   };
 
-  const handleEditContact = (contact: Contact) => {
+  const handleEditContact = (contact: Contacto) => {
     setSelectedContact(contact);
     setShowContactForm(true);
   };
@@ -80,51 +80,80 @@ function App() {
     setActiveTab(tab);
   };
 
-  return (
-    <>
-      <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-        {activeTab === 'dashboard' && (
-          <Dashboard
-            key={`dashboard-${refreshKey}`}
-            onNavigate={handleNavigate}
-            onCreateEvent={handleCreateEvent}
-          />
-        )}
-        {activeTab === 'events' && (
-          <EventsList
-            key={`events-${refreshKey}`}
-            onCreateEvent={handleCreateEvent}
-            onEditEvent={handleEditEvent}
-          />
-        )}
-        {activeTab === 'locations' && (
-          <LocationsList
-            key={`locations-${refreshKey}`}
-            onCreateLocation={handleCreateLocation}
-            onEditLocation={handleEditLocation}
-          />
-        )}
-        {activeTab === 'contacts' && (
-          <ContactsList
-            key={`contacts-${refreshKey}`}
-            onCreateContact={handleCreateContact}
-            onEditContact={handleEditContact}
-          />
-        )}
-        {activeTab === 'settings' && (
-          <div className="card p-8 text-center">
-            <h2 className="text-xl font-semibold text-text-primary mb-2">Configuración</h2>
-            <p className="text-text-muted">Próximamente...</p>
-          </div>
-        )}
-        {activeTab === 'help' && (
-          <div className="card p-8 text-center">
-            <h2 className="text-xl font-semibold text-text-primary mb-2">Centro de Ayuda</h2>
-            <p className="text-text-muted">Próximamente...</p>
-          </div>
-        )}
-      </Layout>
+  const getPageTitle = () => {
+    switch (activeTab) {
+      case 'dashboard': return 'Panel de Control';
+      case 'events': return 'Eventos';
+      case 'locations': return 'Ubicaciones';
+      case 'contacts': return 'Contactos';
+      case 'settings': return 'Configuración';
+      case 'help': return 'Ayuda';
+      default: return 'Panel de Control';
+    }
+  };
 
+  const getPageSubtitle = () => {
+    switch (activeTab) {
+      case 'dashboard': return 'Resumen de tu sistema de eventos';
+      case 'events': return 'Gestiona conferencias, talleres y seminarios';
+      case 'locations': return 'Administra los lugares de tus eventos';
+      case 'contacts': return 'Directorio de ponentes e invitados';
+      case 'settings': return 'Configura tu sistema';
+      case 'help': return 'Centro de ayuda';
+      default: return '';
+    }
+  };
+
+  return (
+    <Layout
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      pageTitle={getPageTitle()}
+      pageSubtitle={getPageSubtitle()}
+    >
+      {activeTab === 'dashboard' && (
+        <Dashboard onNavigate={handleNavigate} onCreateEvent={handleCreateEvent} />
+      )}
+
+      {activeTab === 'events' && (
+        <EventsList
+          onEdit={handleEditEvent}
+          onNew={handleCreateEvent}
+          refreshTrigger={refreshKey}
+        />
+      )}
+
+      {activeTab === 'locations' && (
+        <LocationsList
+          onEdit={handleEditLocation}
+          onNew={handleCreateLocation}
+          refreshTrigger={refreshKey}
+        />
+      )}
+
+      {activeTab === 'contacts' && (
+        <ContactsList
+          onEdit={handleEditContact}
+          onNew={handleCreateContact}
+          refreshTrigger={refreshKey}
+        />
+      )}
+
+      {activeTab === 'settings' && (
+        <div className="card p-8 text-center">
+          <h2 className="text-xl font-semibold text-text-primary mb-2">Configuración</h2>
+          <p className="text-text-muted">Próximamente...</p>
+        </div>
+      )}
+
+      {activeTab === 'help' && (
+        <div className="card p-8 text-center">
+          <h2 className="text-xl font-semibold text-text-primary mb-2">Centro de Ayuda</h2>
+          <p className="text-text-muted">Próximamente...</p>
+        </div>
+      )}
+
+      {/* Modals */}
       {showEventForm && (
         <EventForm
           event={selectedEvent}
@@ -148,7 +177,7 @@ function App() {
           onSave={handleSaveContact}
         />
       )}
-    </>
+    </Layout>
   );
 }
 

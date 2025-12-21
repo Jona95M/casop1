@@ -1,33 +1,33 @@
 import { useState, useEffect, FormEvent } from 'react';
-import { X, User, Upload } from 'lucide-react';
-import { supabase, Contact } from '../lib/supabase';
+import { X, User } from 'lucide-react';
+import { supabase, Contacto } from '../lib/supabase';
 
 interface ContactFormProps {
-  contact?: Contact | null;
+  contact?: Contacto | null;
   onClose: () => void;
   onSave: () => void;
 }
 
 export default function ContactForm({ contact, onClose, onSave }: ContactFormProps) {
   const [formData, setFormData] = useState({
-    salutation: '',
-    full_name: '',
-    identification_number: '',
-    email: '',
-    phone: '',
-    photo_url: '',
+    salutacion: '',
+    nombre_completo: '',
+    numero_identificacion: '',
+    correo_electronico: '',
+    telefono: '',
+    url_foto: '',
   });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (contact) {
       setFormData({
-        salutation: contact.salutation,
-        full_name: contact.full_name,
-        identification_number: contact.identification_number || '',
-        email: contact.email,
-        phone: contact.phone,
-        photo_url: contact.photo_url,
+        salutacion: contact.salutacion,
+        nombre_completo: contact.nombre_completo,
+        numero_identificacion: contact.numero_identificacion || '',
+        correo_electronico: contact.correo_electronico,
+        telefono: contact.telefono,
+        url_foto: contact.url_foto,
       });
     }
   }, [contact]);
@@ -37,20 +37,20 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
     setSaving(true);
 
     try {
-      const contactData = {
+      const contactoData = {
         ...formData,
-        identification_number: formData.identification_number || null,
-        updated_at: new Date().toISOString(),
+        numero_identificacion: formData.numero_identificacion || null,
+        actualizado_en: new Date().toISOString(),
       };
 
       if (contact) {
         const { error } = await supabase
-          .from('contacts')
-          .update(contactData)
+          .from('contactos')
+          .update(contactoData)
           .eq('id', contact.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('contacts').insert([contactData]);
+        const { error } = await supabase.from('contactos').insert([contactoData]);
         if (error) throw error;
       }
 
@@ -96,9 +96,9 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
           {/* Photo Preview */}
           <div className="flex justify-center">
             <div className="relative">
-              {formData.photo_url ? (
+              {formData.url_foto ? (
                 <img
-                  src={formData.photo_url}
+                  src={formData.url_foto}
                   alt="Vista previa"
                   className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-border-light"
                   onError={(e) => {
@@ -108,7 +108,7 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
               ) : (
                 <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-2xl">
-                    {formData.full_name ? getInitials(formData.full_name) : <User className="w-10 h-10" />}
+                    {formData.nombre_completo ? getInitials(formData.nombre_completo) : <User className="w-10 h-10" />}
                   </span>
                 </div>
               )}
@@ -119,8 +119,8 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
             <div>
               <label className="label">Saludo</label>
               <select
-                value={formData.salutation}
-                onChange={(e) => setFormData({ ...formData, salutation: e.target.value })}
+                value={formData.salutacion}
+                onChange={(e) => setFormData({ ...formData, salutacion: e.target.value })}
                 className="input"
               >
                 <option value="">-</option>
@@ -131,6 +131,7 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
                 <option value="Dra.">Dra.</option>
                 <option value="Ing.">Ing.</option>
                 <option value="Lic.">Lic.</option>
+                <option value="Msc.">Msc.</option>
                 <option value="Prof.">Prof.</option>
               </select>
             </div>
@@ -140,8 +141,8 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
               <input
                 type="text"
                 required
-                value={formData.full_name}
-                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                value={formData.nombre_completo}
+                onChange={(e) => setFormData({ ...formData, nombre_completo: e.target.value })}
                 placeholder="Ej: Juan Pérez García"
                 className="input"
               />
@@ -152,9 +153,9 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
             <label className="label">Número de Identificación</label>
             <input
               type="text"
-              value={formData.identification_number}
-              onChange={(e) => setFormData({ ...formData, identification_number: e.target.value })}
-              placeholder="Ej: 12345678"
+              value={formData.numero_identificacion}
+              onChange={(e) => setFormData({ ...formData, numero_identificacion: e.target.value })}
+              placeholder="Ej: 1712345678"
               className="input"
             />
           </div>
@@ -165,8 +166,8 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
               <input
                 type="email"
                 required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                value={formData.correo_electronico}
+                onChange={(e) => setFormData({ ...formData, correo_electronico: e.target.value })}
                 placeholder="correo@ejemplo.com"
                 className="input"
               />
@@ -176,9 +177,9 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
               <label className="label">Número de Teléfono</label>
               <input
                 type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+51 999 999 999"
+                value={formData.telefono}
+                onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                placeholder="+593 99 999 9999"
                 className="input"
               />
             </div>
@@ -189,8 +190,8 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
             <div className="flex gap-2">
               <input
                 type="url"
-                value={formData.photo_url}
-                onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
+                value={formData.url_foto}
+                onChange={(e) => setFormData({ ...formData, url_foto: e.target.value })}
                 placeholder="https://ejemplo.com/foto.jpg"
                 className="input flex-1"
               />
