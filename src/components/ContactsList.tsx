@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Plus, Edit2, Trash2, Search, Mail, Phone } from 'lucide-react';
 import { supabase, Contacto } from '../lib/supabase';
+import ConfirmDialog from './ConfirmDialog';
 
 interface ContactsListProps {
   onEdit: (contact: Contacto) => void;
@@ -12,6 +13,11 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
   const [contacts, setContacts] = useState<Contacto[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; contactId: string | null; contactName: string }>({
+    isOpen: false,
+    contactId: null,
+    contactName: '',
+  });
 
   useEffect(() => {
     loadContacts();
@@ -32,15 +38,25 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este contacto?')) return;
+  const handleDeleteClick = (id: string, name: string) => {
+    setDeleteConfirm({ isOpen: true, contactId: id, contactName: name });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.contactId) return;
 
     try {
-      const { error } = await supabase.from('contactos').delete().eq('id', id);
+      const { error } = await supabase.from('contactos').delete().eq('id', deleteConfirm.contactId);
       if (error) throw error;
       loadContacts();
     } catch (error) {
+    } finally {
+      setDeleteConfirm({ isOpen: false, contactId: null, contactName: '' });
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ isOpen: false, contactId: null, contactName: '' });
   };
 
   const getInitials = (name: string) => {
@@ -152,7 +168,7 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(contact.id)}
+                        onClick={() => handleDeleteClick(contact.id, contact.nombre_completo)}
                         className="btn-icon hover:bg-red-50 hover:text-red-500"
                         title="Eliminar"
                       >
@@ -185,6 +201,16 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Eliminar Contacto"
+        message={`¿Estás seguro de que deseas eliminar a "${deleteConfirm.contactName}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }

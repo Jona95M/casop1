@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, Users, Filter, Plus, Edit2, Trash2, Tag } from 'lucide-react';
 import { supabase, Evento, Ubicacion } from '../lib/supabase';
+import ConfirmDialog from './ConfirmDialog';
 
 interface EventsListProps {
   onEdit: (event: Evento) => void;
@@ -13,6 +14,11 @@ export default function EventsList({ onEdit, onNew, refreshTrigger }: EventsList
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterClassification, setFilterClassification] = useState('all');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; eventId: string | null; eventTitle: string }>({
+    isOpen: false,
+    eventId: null,
+    eventTitle: '',
+  });
 
   useEffect(() => {
     loadEvents();
@@ -33,15 +39,25 @@ export default function EventsList({ onEdit, onNew, refreshTrigger }: EventsList
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este evento?')) return;
+  const handleDeleteClick = (id: string, title: string) => {
+    setDeleteConfirm({ isOpen: true, eventId: id, eventTitle: title });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.eventId) return;
 
     try {
-      const { error } = await supabase.from('eventos').delete().eq('id', id);
+      const { error } = await supabase.from('eventos').delete().eq('id', deleteConfirm.eventId);
       if (error) throw error;
       loadEvents();
     } catch (error) {
+    } finally {
+      setDeleteConfirm({ isOpen: false, eventId: null, eventTitle: '' });
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ isOpen: false, eventId: null, eventTitle: '' });
   };
 
   const formatDate = (dateString: string) => {
@@ -177,7 +193,7 @@ export default function EventsList({ onEdit, onNew, refreshTrigger }: EventsList
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(event.id)}
+                    onClick={() => handleDeleteClick(event.id, event.titulo)}
                     className="btn-icon hover:bg-red-50 hover:text-red-500"
                     title="Eliminar"
                   >
@@ -189,6 +205,16 @@ export default function EventsList({ onEdit, onNew, refreshTrigger }: EventsList
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Eliminar Evento"
+        message={`¿Estás seguro de que deseas eliminar "${deleteConfirm.eventTitle}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }

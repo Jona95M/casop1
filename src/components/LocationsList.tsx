@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Plus, Edit2, Trash2, Search, ExternalLink, Navigation } from 'lucide-react';
 import { supabase, Ubicacion } from '../lib/supabase';
+import ConfirmDialog from './ConfirmDialog';
 
 interface LocationsListProps {
   onEdit: (location: Ubicacion) => void;
@@ -12,6 +13,11 @@ export default function LocationsList({ onEdit, onNew, refreshTrigger }: Locatio
   const [locations, setLocations] = useState<Ubicacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; locationId: string | null; locationTitle: string }>({
+    isOpen: false,
+    locationId: null,
+    locationTitle: '',
+  });
 
   useEffect(() => {
     loadLocations();
@@ -32,15 +38,25 @@ export default function LocationsList({ onEdit, onNew, refreshTrigger }: Locatio
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar esta ubicación?')) return;
+  const handleDeleteClick = (id: string, title: string) => {
+    setDeleteConfirm({ isOpen: true, locationId: id, locationTitle: title });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.locationId) return;
 
     try {
-      const { error } = await supabase.from('ubicaciones').delete().eq('id', id);
+      const { error } = await supabase.from('ubicaciones').delete().eq('id', deleteConfirm.locationId);
       if (error) throw error;
       loadLocations();
     } catch (error) {
+    } finally {
+      setDeleteConfirm({ isOpen: false, locationId: null, locationTitle: '' });
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ isOpen: false, locationId: null, locationTitle: '' });
   };
 
   const openInMaps = (lat: number | null, lng: number | null, title: string) => {
@@ -115,7 +131,7 @@ export default function LocationsList({ onEdit, onNew, refreshTrigger }: Locatio
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(location.id)}
+                    onClick={() => handleDeleteClick(location.id, location.titulo)}
                     className="btn-icon hover:bg-red-50 hover:text-red-500"
                     title="Eliminar"
                   >
@@ -144,6 +160,16 @@ export default function LocationsList({ onEdit, onNew, refreshTrigger }: Locatio
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Eliminar Ubicación"
+        message={`¿Estás seguro de que deseas eliminar "${deleteConfirm.locationTitle}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }
