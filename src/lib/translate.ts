@@ -11,6 +11,7 @@ const MIRRORS = [
 const CACHE_KEY = 'translation_cache_v2';
 
 // Static fallback dictionary for core UI terms when API fails
+// Static fallback dictionary for core UI terms when API fails
 const FALLBACK_TRANSLATIONS: Record<string, string> = {
   // Dashboard & Navigation
   'Dashboard': 'Dashboard',
@@ -35,6 +36,8 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
   'Total Eventos': 'Total Events',
   'Total Ubicaciones': 'Total Locations',
   'Total Contactos': 'Total Contacts',
+  'Esta semana': 'This week',
+  'Estadísticas': 'Statistics',
 
   // Search & Common
   'Buscar...': 'Search...',
@@ -46,6 +49,30 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
   'Cancelar': 'Cancel',
   'Guardar': 'Save',
   'Cargando...': 'Loading...',
+  'Ver en Maps': 'View in Maps',
+  'Enviar correo a': 'Send email to',
+  'Llamar a': 'Call',
+  'Cerrar': 'Close',
+
+  // Lists & Empty States
+  'No hay eventos': 'No events',
+  'No hay ubicaciones': 'No locations',
+  'No hay contactos': 'No contacts',
+  'Comienza creando tu primer evento': 'Start by creating your first event',
+  'Comienza agregando tu primera ubicación': 'Start by adding your first location',
+  'Comienza agregando tu primer contacto': 'Start by adding your first contact',
+  'Agregar Ubicación': 'Add Location',
+  'Agregar Contacto': 'Add Contact',
+
+  // Filters & Badges
+  'Filtrar por clasificación': 'Filter by classification',
+  'Todas las clasificaciones': 'All classifications',
+  'Conferencia': 'Conference',
+  'Taller': 'Workshop',
+  'Seminario': 'Seminar',
+  'Conferencias': 'Conferences',
+  'Talleres': 'Workshops',
+  'Seminarios': 'Seminars',
 
   // Forms & Dialogs
   'Nuevo Evento': 'New Event',
@@ -58,6 +85,24 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
   'Descripción': 'Description',
   'Fecha y Hora': 'Date and Time',
   'Ubicación': 'Location',
+  'Dirección': 'Address',
+  'Latitud': 'Latitude',
+  'Longitud': 'Longitude',
+  'Saludo': 'Salutation',
+  'Nombre Completo': 'Full Name',
+  'Número de Identificación': 'ID Number',
+  'Correo Electrónico': 'Email',
+  'Número de Teléfono': 'Phone Number',
+  'URL de Fotografía': 'Photo URL',
+  'Vista previa': 'Preview',
+  'Ingresa la URL de una imagen para la foto del contacto': 'Enter an image URL for the contact photo',
+
+  // Confirm Dialogs
+  'Eliminar Evento': 'Delete Event',
+  'Eliminar Ubicación': 'Delete Location',
+  'Eliminar Contacto': 'Delete Contact',
+  '¿Estás seguro de que deseas eliminar': 'Are you sure you want to delete',
+  'Esta acción no se puede deshacer.': 'This action cannot be undone.'
 };
 
 const loadCache = (): Record<string, string> => {
