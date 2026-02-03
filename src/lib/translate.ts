@@ -8,7 +8,7 @@ const MIRRORS = [
   'https://libretranslate.org/translate'
 ];
 
-const CACHE_KEY = 'translation_cache';
+const CACHE_KEY = 'translation_cache_v2';
 
 // Static fallback dictionary for core UI terms when API fails
 const FALLBACK_TRANSLATIONS: Record<string, string> = {

@@ -14,7 +14,7 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-const TRANSLATIONS_CACHE_KEY = 'dynamic_translations_v2';
+const TRANSLATIONS_CACHE_KEY = 'dynamic_translations_v3';
 const LANGUAGE_KEY = 'app_language';
 
 // Load cached translations from localStorage
