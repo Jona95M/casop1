@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { X, Calendar } from 'lucide-react';
 import { supabase, Evento, Ubicacion } from '../lib/supabase';
+import { useTranslation } from '../context/TranslationContext';
 
 interface EventFormProps {
     event?: Evento | null;
@@ -22,6 +23,7 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
         ubicacion_id: '',
     });
     const [saving, setSaving] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         loadUbicaciones();
@@ -70,66 +72,69 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
             onSave();
             onClose();
         } catch (error) {
-            alert('Error al guardar el evento');
+            alert(t('Error al guardar el evento'));
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="event-form-title">
             <div className="modal-content max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-border-light z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                            <Calendar className="w-5 h-5 text-primary" />
+                            <Calendar className="w-5 h-5 text-primary" aria-hidden="true" />
                         </div>
-                        <h2 className="text-xl font-semibold text-text-primary">
-                            {event ? 'Editar Evento' : 'Nuevo Evento'}
+                        <h2 id="event-form-title" className="text-xl font-semibold text-text-primary">
+                            {event ? t('Editar Evento') : t('Nuevo Evento')}
                         </h2>
                     </div>
-                    <button onClick={onClose} className="btn-icon hover:bg-gray-100">
-                        <X className="w-5 h-5 text-text-secondary" />
+                    <button onClick={onClose} className="btn-icon hover:bg-gray-100" aria-label={t('Cerrar')}>
+                        <X className="w-5 h-5 text-text-secondary" aria-hidden="true" />
                     </button>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                     <div>
-                        <label className="label">Título *</label>
+                        <label className="label" htmlFor="titulo">{t('Título')} *</label>
                         <input
                             type="text"
+                            id="titulo"
                             required
                             value={formData.titulo}
                             onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                            placeholder="Ej: Conferencia de Innovación Tecnológica"
+                            placeholder={t('Ej: Conferencia de Innovación Tecnológica')}
                             className="input"
                         />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="label">Clasificación *</label>
+                            <label className="label" htmlFor="clasificacion">{t('Clasificación')} *</label>
                             <select
+                                id="clasificacion"
                                 value={formData.clasificacion}
                                 onChange={(e) => setFormData({ ...formData, clasificacion: e.target.value })}
                                 className="input"
                             >
-                                <option value="conferencia">Conferencia</option>
-                                <option value="taller">Taller</option>
-                                <option value="seminario">Seminario</option>
+                                <option value="conferencia">{t('Conferencia')}</option>
+                                <option value="taller">{t('Taller')}</option>
+                                <option value="seminario">{t('Seminario')}</option>
                             </select>
                         </div>
 
                         <div>
-                            <label className="label">Ubicación</label>
+                            <label className="label" htmlFor="ubicacion">{t('Ubicación')}</label>
                             <select
+                                id="ubicacion"
                                 value={formData.ubicacion_id}
                                 onChange={(e) => setFormData({ ...formData, ubicacion_id: e.target.value })}
                                 className="input"
                             >
-                                <option value="">Sin ubicación</option>
+                                <option value="">{t('Sin ubicación')}</option>
                                 {ubicaciones.map((ubicacion) => (
                                     <option key={ubicacion.id} value={ubicacion.id}>
                                         {ubicacion.titulo}
@@ -141,9 +146,10 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="label">Fecha y Hora *</label>
+                            <label className="label" htmlFor="fecha">{t('Fecha y Hora')} *</label>
                             <input
                                 type="datetime-local"
+                                id="fecha"
                                 required
                                 value={formData.fecha_evento}
                                 onChange={(e) => setFormData({ ...formData, fecha_evento: e.target.value })}
@@ -152,8 +158,9 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                         </div>
 
                         <div>
-                            <label className="label">Zona Horaria</label>
+                            <label className="label" htmlFor="zona">{t('Zona Horaria')}</label>
                             <select
+                                id="zona"
                                 value={formData.zona_horaria}
                                 onChange={(e) => setFormData({ ...formData, zona_horaria: e.target.value })}
                                 className="input"
@@ -170,57 +177,61 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                     </div>
 
                     <div>
-                        <label className="label">Invitados</label>
+                        <label className="label" htmlFor="invitados">{t('Invitados')}</label>
                         <input
                             type="text"
+                            id="invitados"
                             value={formData.invitados}
                             onChange={(e) => setFormData({ ...formData, invitados: e.target.value })}
-                            placeholder="Nombres separados por comas"
+                            placeholder={t('Nombres separados por comas')}
                             className="input"
                         />
                     </div>
 
                     <div>
-                        <label className="label">Descripción</label>
+                        <label className="label" htmlFor="descripcion">{t('Descripción')}</label>
                         <textarea
+                            id="descripcion"
                             value={formData.descripcion}
                             onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                             rows={3}
-                            placeholder="Describe los detalles del evento..."
+                            placeholder={t('Describe los detalles del evento...')}
                             className="input resize-none"
                         />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="label">Repetición</label>
+                            <label className="label" htmlFor="recurrencia">{t('Repetición')}</label>
                             <select
+                                id="recurrencia"
                                 value={formData.recurrencia}
                                 onChange={(e) => setFormData({ ...formData, recurrencia: e.target.value })}
                                 className="input"
                             >
-                                <option value="ninguna">No se repite</option>
-                                <option value="diaria">Diariamente</option>
-                                <option value="semanal">Semanalmente</option>
-                                <option value="mensual">Mensualmente</option>
-                                <option value="anual">Anualmente</option>
+                                <option value="ninguna">{t('No se repite')}</option>
+                                <option value="diaria">{t('Diariamente')}</option>
+                                <option value="semanal">{t('Semanalmente')}</option>
+                                <option value="mensual">{t('Mensualmente')}</option>
+                                <option value="anual">{t('Anualmente')}</option>
                             </select>
                         </div>
 
                         <div>
-                            <label className="label">Recordatorio</label>
+                            <label className="label" htmlFor="recordatorio">{t('Recordatorio')}</label>
                             <select
+                                id="recordatorio"
                                 value={formData.recordatorio}
                                 onChange={(e) => setFormData({ ...formData, recordatorio: e.target.value })}
                                 className="input"
                             >
-                                <option value="ninguno">Sin recordatorio</option>
-                                <option value="5min">5 minutos antes</option>
-                                <option value="15min">15 minutos antes</option>
-                                <option value="30min">30 minutos antes</option>
-                                <option value="1hora">1 hora antes</option>
-                                <option value="1dia">1 día antes</option>
-                                <option value="1semana">1 semana antes</option>
+                                <option value="ninguno">{t('Sin recordatorio')}</option>
+                                <option value="5min">{t('5 minutos antes')}</option>
+                                <option value="15min">{t('15 minutos antes')}</option>
+                                <option value="30min">{t('30 minutos antes')}</option>
+                                <option value="1hora">{t('1 hora antes')}</option>
+                                <option value="1dia">{t('1 día antes')}</option>
+                                <option value="1semana">{t('1 semana antes')}</option>
                             </select>
                         </div>
                     </div>
@@ -232,14 +243,14 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
                             onClick={onClose}
                             className="btn-secondary"
                         >
-                            Cancelar
+                            {t('Cancelar')}
                         </button>
                         <button
                             type="submit"
                             disabled={saving}
                             className="btn-primary"
                         >
-                            {saving ? 'Guardando...' : 'Guardar'}
+                            {saving ? t('Guardando...') : t('Guardar')}
                         </button>
                     </div>
                 </form>
@@ -247,3 +258,4 @@ export default function EventForm({ event, onClose, onSave }: EventFormProps) {
         </div>
     );
 }
+

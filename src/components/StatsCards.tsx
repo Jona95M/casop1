@@ -1,5 +1,6 @@
 import { Calendar, MapPin, Users, TrendingUp } from 'lucide-react';
 import { Evento, Ubicacion, Contacto } from '../lib/supabase';
+import { useTranslation } from '../context/TranslationContext';
 
 interface StatsCardsProps {
     events: Evento[];
@@ -8,11 +9,12 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ events, locations, contacts }: StatsCardsProps) {
+    const { t } = useTranslation();
     const upcomingEvents = events.filter(e => new Date(e.fecha_evento) > new Date()).length;
 
     const stats = [
         {
-            label: 'Total Eventos',
+            label: t('Total Eventos'),
             value: events.length,
             change: '+12%',
             icon: Calendar,
@@ -21,7 +23,7 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             changeColor: 'text-success',
         },
         {
-            label: 'Ubicaciones',
+            label: t('Total Ubicaciones'),
             value: locations.length,
             change: '+5%',
             icon: MapPin,
@@ -30,7 +32,7 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             changeColor: 'text-success',
         },
         {
-            label: 'Contactos',
+            label: t('Total Contactos'),
             value: contacts.length,
             change: '+8%',
             icon: Users,
@@ -39,9 +41,9 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             changeColor: 'text-success',
         },
         {
-            label: 'Próximos Eventos',
+            label: t('Próximos Eventos'),
             value: upcomingEvents,
-            change: 'Esta semana',
+            change: t('Esta semana'),
             icon: TrendingUp,
             iconBg: 'bg-purple-100',
             iconColor: 'text-purple-600',
@@ -50,14 +52,14 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" role="region" aria-label={t('Estadísticas')}>
             {stats.map((stat, index) => {
                 const Icon = stat.icon;
 
                 return (
                     <div key={index} className="stats-card">
                         <div className={`stats-icon ${stat.iconBg}`}>
-                            <Icon className={`w-6 h-6 ${stat.iconColor}`} />
+                            <Icon className={`w-6 h-6 ${stat.iconColor}`} aria-hidden="true" />
                         </div>
                         <div className="flex-1">
                             <p className="text-sm text-text-muted font-medium">{stat.label}</p>
@@ -76,3 +78,4 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
         </div>
     );
 }
+

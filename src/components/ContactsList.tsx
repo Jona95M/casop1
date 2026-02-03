@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Plus, Edit2, Trash2, Search, Mail, Phone } from 'lucide-react';
 import { supabase, Contacto } from '../lib/supabase';
 import ConfirmDialog from './ConfirmDialog';
+import { useTranslation } from '../context/TranslationContext';
 
 interface ContactsListProps {
   onEdit: (contact: Contacto) => void;
@@ -18,6 +19,7 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
     contactId: null,
     contactName: '',
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadContacts();
@@ -88,7 +90,7 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center h-64" role="status" aria-label={t('Cargando...')}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -99,30 +101,31 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" aria-hidden="true" />
           <input
             type="text"
-            placeholder="Buscar contactos..."
+            placeholder={t('Buscar contactos...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input-search w-full"
+            aria-label={t('Buscar contactos...')}
           />
         </div>
         <button onClick={onNew} className="btn-primary">
-          <Plus className="w-4 h-4" />
-          <span>Nuevo Contacto</span>
+          <Plus className="w-4 h-4" aria-hidden="true" />
+          <span>{t('Nuevo Contacto')}</span>
         </button>
       </div>
 
       {/* Contacts Grid */}
       {filteredContacts.length === 0 ? (
         <div className="card p-12 text-center">
-          <User className="w-12 h-12 text-text-muted mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">No hay contactos</h3>
-          <p className="text-text-muted mb-4">Comienza agregando tu primer contacto</p>
+          <User className="w-12 h-12 text-text-muted mx-auto mb-4" aria-hidden="true" />
+          <h3 className="text-lg font-medium text-text-primary mb-2">{t('No hay contactos')}</h3>
+          <p className="text-text-muted mb-4">{t('Comienza agregando tu primer contacto')}</p>
           <button onClick={onNew} className="btn-primary mx-auto">
-            <Plus className="w-4 h-4" />
-            <span>Agregar Contacto</span>
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            <span>{t('Agregar Contacto')}</span>
           </button>
         </div>
       ) : (
@@ -142,7 +145,7 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
                       }}
                     />
                   ) : (
-                    <span className="text-white font-semibold text-sm">
+                    <span className="text-white font-semibold text-sm" aria-hidden="true">
                       {getInitials(contact.nombre_completo)}
                     </span>
                   )}
@@ -163,16 +166,18 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
                       <button
                         onClick={() => onEdit(contact)}
                         className="btn-icon hover:bg-primary-50 hover:text-primary"
-                        title="Editar"
+                        title={t('Editar')}
+                        aria-label={`${t('Editar')} ${contact.nombre_completo}`}
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-4 h-4" aria-hidden="true" />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(contact.id, contact.nombre_completo)}
                         className="btn-icon hover:bg-red-50 hover:text-red-500"
-                        title="Eliminar"
+                        title={t('Eliminar')}
+                        aria-label={`${t('Eliminar')} ${contact.nombre_completo}`}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -181,16 +186,18 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
                     <a
                       href={`mailto:${contact.correo_electronico}`}
                       className="flex items-center gap-2 text-sm text-text-secondary hover:text-primary transition-colors"
+                      aria-label={`${t('Enviar correo a')} ${contact.nombre_completo}`}
                     >
-                      <Mail className="w-4 h-4 text-primary" />
+                      <Mail className="w-4 h-4 text-primary" aria-hidden="true" />
                       <span className="truncate">{contact.correo_electronico}</span>
                     </a>
                     {contact.telefono && (
                       <a
                         href={`tel:${contact.telefono}`}
                         className="flex items-center gap-2 text-sm text-text-secondary hover:text-primary transition-colors"
+                        aria-label={`${t('Llamar a')} ${contact.nombre_completo}`}
                       >
-                        <Phone className="w-4 h-4 text-success" />
+                        <Phone className="w-4 h-4 text-success" aria-hidden="true" />
                         <span>{contact.telefono}</span>
                       </a>
                     )}
@@ -204,13 +211,14 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
 
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
-        title="Eliminar Contacto"
-        message={`¿Estás seguro de que deseas eliminar a "${deleteConfirm.contactName}"? Esta acción no se puede deshacer.`}
-        confirmText="Eliminar"
-        cancelText="Cancelar"
+        title={t('Eliminar Contacto')}
+        message={`${t('¿Estás seguro de que deseas eliminar')} "${deleteConfirm.contactName}"? ${t('Esta acción no se puede deshacer.')}`}
+        confirmText={t('Eliminar')}
+        cancelText={t('Cancelar')}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />
     </div>
   );
 }
+

@@ -7,7 +7,9 @@ import LocationsList from './components/LocationsList';
 import LocationForm from './components/LocationForm';
 import ContactsList from './components/ContactsList';
 import ContactForm from './components/ContactForm';
+import HelpCenter from './components/HelpCenter';
 import { Evento, Ubicacion, Contacto } from './lib/supabase';
+import { useTranslation } from './context/TranslationContext';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -18,6 +20,7 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState<Ubicacion | null>(null);
   const [selectedContact, setSelectedContact] = useState<Contacto | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { t } = useTranslation();
 
   const handleCreateEvent = () => {
     setSelectedEvent(null);
@@ -116,16 +119,13 @@ function App() {
 
       {activeTab === 'settings' && (
         <div className="card p-8 text-center">
-          <h2 className="text-xl font-semibold text-text-primary mb-2">Configuración</h2>
-          <p className="text-text-muted">Próximamente...</p>
+          <h2 className="text-xl font-semibold text-text-primary mb-2">{t('Configuración')}</h2>
+          <p className="text-text-muted">{t('Próximamente...')}</p>
         </div>
       )}
 
       {activeTab === 'help' && (
-        <div className="card p-8 text-center">
-          <h2 className="text-xl font-semibold text-text-primary mb-2">Centro de Ayuda</h2>
-          <p className="text-text-muted">Próximamente...</p>
-        </div>
+        <HelpCenter />
       )}
 
       {/* Modals */}

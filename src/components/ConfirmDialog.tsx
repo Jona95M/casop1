@@ -22,28 +22,29 @@ export default function ConfirmDialog({
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onCancel}>
+        <div className="modal-overlay" onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
             <div
                 className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-slide-in"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <AlertTriangle className="w-6 h-6 text-red-500" />
+                        <AlertTriangle className="w-6 h-6 text-red-500" aria-hidden="true" />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-text-primary mb-1">
+                        <h3 id="confirm-dialog-title" className="text-lg font-semibold text-text-primary mb-1">
                             {title}
                         </h3>
-                        <p className="text-text-secondary text-sm">
+                        <p id="confirm-dialog-message" className="text-text-secondary text-sm">
                             {message}
                         </p>
                     </div>
                     <button
                         onClick={onCancel}
                         className="btn-icon hover:bg-gray-100 -mt-1 -mr-1"
+                        aria-label="Cerrar"
                     >
-                        <X className="w-5 h-5 text-text-muted" />
+                        <X className="w-5 h-5 text-text-muted" aria-hidden="true" />
                     </button>
                 </div>
 
@@ -65,3 +66,4 @@ export default function ConfirmDialog({
         </div>
     );
 }
+

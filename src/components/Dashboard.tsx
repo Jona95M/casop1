@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, ArrowRight, Plus, Sparkles } from 'lucide-react';
 import { supabase, Evento, Ubicacion, Contacto } from '../lib/supabase';
 import StatsCards from './StatsCards';
+import { useTranslation } from '../context/TranslationContext';
 
 interface DashboardProps {
     onNavigate: (tab: 'events' | 'locations' | 'contacts') => void;
@@ -13,6 +14,7 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
     const [locations, setLocations] = useState<Ubicacion[]>([]);
     const [contacts, setContacts] = useState<Contacto[]>([]);
     const [loading, setLoading] = useState(true);
+    const { t, language } = useTranslation();
 
     useEffect(() => {
         loadData();
@@ -37,7 +39,7 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('es-EC', {
+        return date.toLocaleDateString(language === 'es' ? 'es-EC' : 'en-US', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -46,7 +48,7 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
 
     const formatTime = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleTimeString('es-EC', {
+        return date.toLocaleTimeString(language === 'es' ? 'es-EC' : 'en-US', {
             hour: '2-digit',
             minute: '2-digit',
         });
@@ -64,8 +66,8 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-pulse-soft text-text-muted">Cargando...</div>
+            <div className="flex items-center justify-center h-64" role="status" aria-label={t('Cargando...')}>
+                <div className="animate-pulse-soft text-text-muted">{t('Cargando...')}</div>
             </div>
         );
     }
@@ -80,22 +82,22 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                 {/* Upcoming Events - Takes 2 columns */}
                 <div className="lg:col-span-2 card p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-lg font-semibold text-text-primary">Próximos Eventos</h2>
+                        <h2 className="text-lg font-semibold text-text-primary">{t('Próximos Eventos')}</h2>
                         <button
                             onClick={() => onNavigate('events')}
                             className="flex items-center gap-1 text-sm text-primary hover:text-primary-600 font-medium transition-colors"
                         >
-                            Ver todos <ArrowRight className="w-4 h-4" />
+                            {t('Ver todos')} <ArrowRight className="w-4 h-4" aria-hidden="true" />
                         </button>
                     </div>
 
                     {upcomingEvents.length === 0 ? (
                         <div className="text-center py-12">
-                            <Calendar className="w-12 h-12 mx-auto text-text-muted mb-3" />
-                            <p className="text-text-secondary mb-4">No hay eventos próximos</p>
+                            <Calendar className="w-12 h-12 mx-auto text-text-muted mb-3" aria-hidden="true" />
+                            <p className="text-text-secondary mb-4">{t('No hay eventos próximos')}</p>
                             <button onClick={onCreateEvent} className="btn-primary">
-                                <Plus className="w-4 h-4" />
-                                Crear Evento
+                                <Plus className="w-4 h-4" aria-hidden="true" />
+                                {t('Crear Evento')}
                             </button>
                         </div>
                     ) : (
@@ -105,7 +107,7 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                                     {/* Date Badge */}
                                     <div className="w-14 h-14 bg-primary rounded-xl flex flex-col items-center justify-center text-white flex-shrink-0">
                                         <span className="text-xs font-medium uppercase">
-                                            {new Date(event.fecha_evento).toLocaleDateString('es-EC', { month: 'short' })}
+                                            {new Date(event.fecha_evento).toLocaleDateString(language === 'es' ? 'es-EC' : 'en-US', { month: 'short' })}
                                         </span>
                                         <span className="text-xl font-bold">
                                             {new Date(event.fecha_evento).getDate()}
@@ -119,12 +121,12 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                                         </h3>
                                         <div className="flex items-center gap-4 mt-1 text-sm text-text-muted">
                                             <span className="flex items-center gap-1">
-                                                <Clock className="w-3.5 h-3.5" />
+                                                <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                                                 {formatTime(event.fecha_evento)}
                                             </span>
                                             {event.ubicacion && (
                                                 <span className="flex items-center gap-1 truncate">
-                                                    <MapPin className="w-3.5 h-3.5" />
+                                                    <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
                                                     {event.ubicacion.titulo}
                                                 </span>
                                             )}
@@ -136,8 +138,8 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                                         event.clasificacion === 'taller' ? 'badge-success' :
                                             'badge-warning'
                                         }`}>
-                                        {event.clasificacion === 'conferencia' ? 'Conferencia' :
-                                            event.clasificacion === 'taller' ? 'Taller' : 'Seminario'}
+                                        {event.clasificacion === 'conferencia' ? t('Conferencia') :
+                                            event.clasificacion === 'taller' ? t('Taller') : t('Seminario')}
                                     </span>
                                 </div>
                             ))}
@@ -152,35 +154,35 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                         <div className="bg-gradient-to-br from-primary to-primary-700 p-6 text-white">
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="badge bg-white/20 text-white border-0">
-                                    <Sparkles className="w-3 h-3 mr-1" />
+                                    <Sparkles className="w-3 h-3 mr-1" aria-hidden="true" />
                                     UTE
                                 </span>
                             </div>
                             <h3 className="text-xl font-bold mb-2">
-                                Sistema de Gestión de Eventos
+                                {t('Sistema de Gestión de Eventos')}
                             </h3>
                             <p className="text-primary-100 text-sm mb-4">
-                                Universidad Técnica Equinoccial - Gestiona conferencias, talleres y seminarios.
+                                {t('Universidad Técnica Equinoccial - Gestiona conferencias, talleres y seminarios.')}
                             </p>
                             <button
                                 onClick={onCreateEvent}
                                 className="w-full bg-white text-primary font-semibold py-2.5 rounded-xl hover:bg-primary-50 transition-colors"
                             >
-                                Crear Nuevo Evento
+                                {t('Crear Nuevo Evento')}
                             </button>
                         </div>
                     </div>
 
                     {/* Recent Activities */}
                     <div className="card p-6">
-                        <h2 className="text-lg font-semibold text-text-primary mb-4">Actividad Reciente</h2>
+                        <h2 className="text-lg font-semibold text-text-primary mb-4">{t('Actividad Reciente')}</h2>
                         <div className="space-y-4">
                             {recentActivities.length === 0 ? (
-                                <p className="text-text-muted text-sm text-center py-4">No hay actividad reciente</p>
+                                <p className="text-text-muted text-sm text-center py-4">{t('No hay actividad reciente')}</p>
                             ) : (
                                 recentActivities.map((activity) => (
                                     <div key={activity.id} className="flex items-start gap-3">
-                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" aria-hidden="true"></div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm text-text-primary font-medium truncate">
                                                 {activity.titulo}
@@ -199,3 +201,4 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
         </div>
     );
 }
+

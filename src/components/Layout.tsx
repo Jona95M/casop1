@@ -38,7 +38,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
         <Header title={currentPage.title} subtitle={currentPage.subtitle} />
 
         {/* Page Content */}
-        <main className="p-6">
+        <main className="p-6" role="main">
           {children}
         </main>
       </div>
@@ -47,3 +47,4 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
 }
 
 export type { Tab };
+
