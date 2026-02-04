@@ -23,6 +23,10 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
   'Ayuda': 'Help',
   'Cerrar Sesión': 'Logout',
 
+  // Sidebar Logo
+  'CASOPRACTICO1': 'PRACTICAL CASE 1',
+  'Gestión de Eventos': 'Event Management',
+
   // Page Subtitles (Layout.tsx)
   'Administra los lugares de tus eventos': 'Manage your event locations',
   'Directorio de contactos e invitados': 'Directory of contacts and guests',
