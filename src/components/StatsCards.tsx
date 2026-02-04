@@ -46,8 +46,8 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             change: t('Esta semana'),
             icon: TrendingUp,
             iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-700',
-            changeColor: 'text-purple-700',
+            iconColor: 'text-purple-800', // Darker for better contrast
+            changeColor: 'text-purple-800', // Darker for better contrast
         },
     ];
 
