@@ -22,6 +22,7 @@ export default {
           100: '#D1FAE5',
           500: '#10B981',
           600: '#059669',
+          700: '#047857', // Emerald 700
           DEFAULT: '#059669', // Darkened from 500 (#10B981) to 600
         },
         // Warning/Orange
@@ -30,6 +31,7 @@ export default {
           100: '#FEF3C7',
           500: '#F59E0B',
           600: '#D97706',
+          700: '#B45309', // Amber 700
           DEFAULT: '#F59E0B',
         },
         // Danger/Red
@@ -38,6 +40,7 @@ export default {
           100: '#FEE2E2',
           500: '#EF4444',
           600: '#DC2626',
+          700: '#B91C1C', // Red 700
           DEFAULT: '#EF4444',
         },
         // Background colors

@@ -19,7 +19,7 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             change: '+12%',
             icon: Calendar,
             iconBg: 'bg-primary-50',
-            iconColor: 'text-primary',
+            iconColor: 'text-primary-700',
             changeColor: 'text-success',
         },
         {
@@ -28,7 +28,7 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             change: '+5%',
             icon: MapPin,
             iconBg: 'bg-success-50',
-            iconColor: 'text-success',
+            iconColor: 'text-success-700',
             changeColor: 'text-success',
         },
         {
@@ -37,7 +37,7 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             change: '+8%',
             icon: Users,
             iconBg: 'bg-warning-50',
-            iconColor: 'text-warning-600',
+            iconColor: 'text-warning-700',
             changeColor: 'text-success',
         },
         {
@@ -46,8 +46,8 @@ export default function StatsCards({ events, locations, contacts }: StatsCardsPr
             change: t('Esta semana'),
             icon: TrendingUp,
             iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-600',
-            changeColor: 'text-purple-600',
+            iconColor: 'text-purple-700',
+            changeColor: 'text-purple-700',
         },
     ];
 
