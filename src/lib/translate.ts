@@ -137,7 +137,13 @@ export const translateText = async (
 ): Promise<string> => {
   if (source === target) return text;
 
-  // 1. Check Cache
+  // 1. Check Static Fallback Dictionary (Prioritize UI consistency)
+  // This ensures known UI terms are always translated correctly/instantly without API latency or errors
+  if (target === 'en' && FALLBACK_TRANSLATIONS[text]) {
+    return FALLBACK_TRANSLATIONS[text];
+  }
+
+  // 2. Check Cache
   const cache = loadCache();
   const cacheKey = getCacheKey(text, source, target);
 
@@ -145,7 +151,7 @@ export const translateText = async (
     return cache[cacheKey];
   }
 
-  // 2. Try API Mirrors
+  // 3. Try API Mirrors
   for (const url of MIRRORS) {
     try {
       const response = await fetch(url, {
@@ -163,6 +169,12 @@ export const translateText = async (
         const data = await response.json();
         const translatedText = data.translatedText;
 
+        // Validation: If API returns same text (and it's not a short word), treat as failure
+        if (translatedText === text && text.length > 3) {
+          console.warn(`Mirror returned untranslated text: ${url}`);
+          continue;
+        }
+
         // Cache success
         cache[cacheKey] = translatedText;
         saveCache(cache);
@@ -173,12 +185,6 @@ export const translateText = async (
       console.warn(`Mirror failed: ${url}`, e);
       continue; // Try next mirror
     }
-  }
-
-  // 3. Fallback to Static Dictionary (if target is EN)
-  if (target === 'en' && FALLBACK_TRANSLATIONS[text]) {
-    console.warn(`Using fallback translation for: ${text}`);
-    return FALLBACK_TRANSLATIONS[text];
   }
 
   // 4. Give up (return original)
