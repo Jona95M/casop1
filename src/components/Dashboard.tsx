@@ -158,9 +158,9 @@ export default function Dashboard({ onNavigate, onCreateEvent }: DashboardProps)
                                     UTE
                                 </span>
                             </div>
-                            <h3 className="text-xl font-bold mb-2">
+                            <h2 className="text-xl font-bold mb-2">
                                 {t('Sistema de Gestión de Eventos')}
-                            </h3>
+                            </h2>
                             <p className="text-primary-100 text-sm mb-4">
                                 {t('Universidad Técnica Equinoccial - Gestiona conferencias, talleres y seminarios.')}
                             </p>

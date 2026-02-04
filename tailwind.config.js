@@ -22,7 +22,7 @@ export default {
           100: '#D1FAE5',
           500: '#10B981',
           600: '#059669',
-          DEFAULT: '#10B981',
+          DEFAULT: '#059669', // Darkened from 500 (#10B981) to 600
         },
         // Warning/Orange
         warning: {
@@ -49,8 +49,8 @@ export default {
         'border-gray': '#CBD5E1',
         // Text colors
         'text-primary': '#0F172A',
-        'text-secondary': '#64748B',
-        'text-muted': '#94A3B8',
+        'text-secondary': '#475569', // Darkened from Slate 500 (#64748B) to Slate 600
+        'text-muted': '#64748B', // Darkened from Slate 400 (#94A3B8) to Slate 500 (Passes AA)
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
