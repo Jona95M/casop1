@@ -36,7 +36,7 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
   // Help Center
   'Centro de Ayuda': 'Help Center',
   'Aprende a usar el sistema con nuestros recursos': 'Learn how to use the system with our resources',
-  'Video Tutorial': 'Video Tutorial',
+  'Video Tutorial': 'Tutorial Video',
   'Tutorial del Sistema de Gestión de Eventos': 'Event Management System Tutorial',
   'Este video te guiará a través de las principales funcionalidades del sistema de gestión de eventos.': 'This video will guide you through the main functionalities of the event management system.',
   'Guía Rápida': 'Quick Start Guide',
