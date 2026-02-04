@@ -72,12 +72,12 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
 
   const getAvatarGradient = (name: string) => {
     const gradients = [
-      'from-blue-400 to-blue-600',
-      'from-purple-400 to-purple-600',
-      'from-pink-400 to-pink-600',
-      'from-emerald-400 to-emerald-600',
-      'from-orange-400 to-orange-600',
-      'from-cyan-400 to-cyan-600',
+      'from-blue-600 to-blue-800',
+      'from-purple-600 to-purple-800',
+      'from-pink-600 to-pink-800',
+      'from-emerald-600 to-emerald-800',
+      'from-orange-600 to-orange-800',
+      'from-cyan-600 to-cyan-800',
     ];
     const index = name.charCodeAt(0) % gradients.length;
     return gradients[index];
@@ -138,7 +138,7 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
                   {contact.url_foto ? (
                     <img
                       src={contact.url_foto}
-                      alt={contact.nombre_completo}
+                      alt={""}
                       className="w-12 h-12 rounded-xl object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -155,9 +155,9 @@ export default function ContactsList({ onEdit, onNew, refreshTrigger }: Contacts
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-semibold text-text-primary truncate">
+                      <h2 className="font-semibold text-text-primary truncate" style={{ fontSize: '1rem' }}>
                         {contact.salutacion} {contact.nombre_completo}
-                      </h3>
+                      </h2>
                       {contact.numero_identificacion && (
                         <p className="text-xs text-text-muted">ID: {contact.numero_identificacion}</p>
                       )}

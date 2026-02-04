@@ -14,7 +14,7 @@ export default {
           500: '#3B82F6',
           600: '#2563EB',
           700: '#1D4ED8',
-          DEFAULT: '#3B82F6',
+          DEFAULT: '#2563EB', // Changed from 500 (#3B82F6) to 600 for WCAG AA Contrast compliance
         },
         // Success/Green
         success: {
