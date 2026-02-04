@@ -25,10 +25,14 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
 
   // Dashboard Content
   'Bienvenido al Sistema de Gestión de Eventos': 'Welcome to the Event Management System',
+  'Sistema de Gestión de Eventos': 'Event Management System',
   'Gestiona conferencias, talleres y seminarios': 'Manage conferences, workshops and seminars',
+  'Universidad Técnica Equinoccial - Gestiona conferencias, talleres y seminarios.': 'Universidad Técnica Equinoccial - Manage conferences, workshops and seminars.',
   'Próximos Eventos': 'Upcoming Events',
   'Ver todos': 'View all',
   'No hay eventos próximos': 'No upcoming events',
+  'Actividad Reciente': 'Recent Activity',
+  'No hay actividad reciente': 'No recent activity',
   'Crear Evento': 'Create Event',
   'Crear Nuevo Evento': 'Create New Event',
 
