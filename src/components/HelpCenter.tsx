@@ -66,8 +66,9 @@ export default function HelpCenter() {
                     {/* Embedded Video Tutorial */}
                     <iframe
                         className="w-full h-full"
-                        src="https://youtu.be/ira3X0BaeTA"
+                        src="https://www.youtube-nocookie.com/embed/ira3X0BaeTA"
                         title={t('Tutorial del Sistema de Gestión de Eventos')}
+                        referrerPolicy="strict-origin-when-cross-origin"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                     ></iframe>
